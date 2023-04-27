@@ -12,48 +12,56 @@ extern char **environ;
  *
  * Return: 0 on success
  */
-int main(int argc, char *argv[]) 
+int main(void)
 {
-	char input[MAX_INPUT];
-	char *args[2];
-	args[1] = NULL;
-	int status;
+    pid_t pid;
+    char input[MAX_INPUT];
+    char *args[2];
+    int status;
 
-	while (1)
-	{
-        	printf("#cisfun$ ");
-        	fflush(stdout);
+    args[1] = NULL;
 
-        // Read user input
-        	if (fgets(input, MAX_INPUT, stdin) == NULL{break;}
-        // Remove newline character from input
-		input[strlen(input) - 1] = '\0';
-        // Fork a new process
-        	pid_t pid = fork();
+    while (1)
+    {
+        printf("#cisfun$ ");
+        fflush(stdout);
 
-        	if (pid < 0)
-		{
-            		perror("fork");
-            		exit(1);
-        	}
-		else if (pid == 0)
-		{
-            // Child process
-            		args[0] = input;
-            		execve(args[0], args, environ);
-            		perror(input);
-            		exit(1);
-        	}
-		else
-		{
-            // Parent process
-            		if (waitpid(pid, &status, 0) == -1)
-			{
-                		perror("waitpid");
-                		exit(1);
-            		}
-        	}
-    	}
-    	printf("\n");
-	return 0;
+        /* Read user input */
+        if (fgets(input, MAX_INPUT, stdin) == NULL)
+        {
+            break;
+        }
+
+        /* Remove newline character from input */
+        input[strlen(input) - 1] = '\0';
+
+        /* Fork a new process */
+        pid = fork();
+
+        if (pid < 0)
+        {
+            perror("fork");
+            exit(1);
+        }
+        else if (pid == 0)
+        {
+            /* Child process */
+            args[0] = input;
+            execve(args[0], args, environ);
+            perror(input);
+            exit(1);
+        }
+        else
+        {
+            /* Parent process */
+            if (waitpid(pid, &status, 0) == -1)
+            {
+                perror("waitpid");
+                exit(1);
+            }
+        }
+    }
+
+    printf("\n");
+    return (0);
 }
